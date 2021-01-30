@@ -19,7 +19,10 @@ public class MouseLook : MonoBehaviour
     
     void Update()
     {
-        Rotate();
+        if (gameManager.mouseLookEnabled)
+        {
+            Rotate();    
+        }
     }
 
     private void CameraInit()

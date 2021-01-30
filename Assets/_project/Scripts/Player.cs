@@ -9,11 +9,9 @@ public class Player : MonoBehaviour
     [SerializeField] private Camera mainCamera;
     [SerializeField] private GameObject fishRod;
     [SerializeField] private GameObject pointerObject;
-    [SerializeField] private GameObject bait;
+    [SerializeField] public GameObject bait;
     [SerializeField] private Image powerBar;
     
-    private Rigidbody rb;
-
     [SerializeField] float chargeSpeed = 70;
     private float chargeLimit = 100;
     private float chargeAmount = 0;
@@ -24,19 +22,21 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
         powerBar.fillAmount = 0;
     }
     
     void Update()
     {
-        SetPointerPos();
-        if (Input.GetMouseButton(0) && !throwSuccesful)
-            ChargeRod();
-        if (Input.GetMouseButtonUp(0) && !throwSuccesful)
-            ThrowBait();
-        if(throwSuccesful)
-            fishCatching.CommenceCatching();
+        if (gameManager.enableFishing)
+        {
+            SetPointerPos();
+            if (Input.GetMouseButton(0) && !throwSuccesful)
+                ChargeRod();
+            if (Input.GetMouseButtonUp(0) && !throwSuccesful)
+                ThrowBait();
+            if (throwSuccesful)
+                fishCatching.CommenceCatching();
+        }
     }
 
     private void ChargeRod()
@@ -52,15 +52,15 @@ public class Player : MonoBehaviour
         float tempCharge = chargeAmount;
         chargeAmount = 0;
         if (!pointerObject.activeSelf || Physics.CheckSphere(transform.position, 8, 1<<9) ) return;
-
-        if (tempCharge > 40 && tempCharge < 60)
+        bait.gameObject.SetActive(true);
+        if (tempCharge > 60 && tempCharge < 75)
         {
-            bait.transform.position = pointerPos;
+            bait.transform.position = pointerPos + Vector3.up/2;
             Debug.Log("Good throw!");
         }
-        else if (tempCharge > 20 && tempCharge < 80)
+        else if (tempCharge > 40 && tempCharge < 80)
         {
-            bait.transform.position = new Vector3(Random.Range(pointerPos.x-4, pointerPos.x+4), pointerPos.y, Random.Range(pointerPos.z-4, pointerPos.z+4));
+            bait.transform.position = new Vector3(Random.Range(pointerPos.x-4, pointerPos.x+4), pointerPos.y + 0.5f, Random.Range(pointerPos.z-4, pointerPos.z+4));
             Debug.Log("Bad throw!");
         }
         else
@@ -91,7 +91,7 @@ public class Player : MonoBehaviour
         {
             if (!pointerObject.activeSelf)
                 pointerObject.SetActive(true);
-            pointerObject.transform.position = hit.point + (hit.normal / 5);
+            pointerObject.transform.position = hit.point + (hit.normal / 2);
             pointerPos = hit.point;
         }
         else
