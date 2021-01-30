@@ -93,6 +93,7 @@ public class FishCatching : MonoBehaviour
         player.throwSuccesful = false;
         gameManager.ResetClamp();
         player.bait.gameObject.SetActive(false);
+        player.baitLineActive = false;
     }
     IEnumerator FishDelay()
     {

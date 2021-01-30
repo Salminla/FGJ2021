@@ -12,11 +12,12 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private TMP_Text titleField;
     [SerializeField] private float textRunSpeed = 0.1f;
     [SerializeField] private GameObject bottleMessage;
+    [SerializeField] private Image characterImage;
     
     [Header("Fisher sprites")]
-    [SerializeField] private Image regularExpression;
-    [SerializeField] private Image wonderingExpression;
-    [SerializeField] private Image surprisedExpression;
+    [SerializeField] private Sprite regularExpression;
+    [SerializeField] private Sprite wonderingExpression;
+    [SerializeField] private Sprite surprisedExpression;
 
     private int dialogIncrement;
     private bool dialogFinished = false;
@@ -59,6 +60,7 @@ public class DialogueManager : MonoBehaviour
             {
                 case 0:
                     PrintDialog("Okay buddy, time to get fishing. Let’s see what kind of fish we are going to get today. ", "Fisherman");
+                    characterImage.sprite = regularExpression;
                     break;
                 default:
                     StopDialogue();
@@ -76,9 +78,11 @@ public class DialogueManager : MonoBehaviour
             {
                 case 0:
                     PrintDialog("Today is the day my friend! I can feel something huge!", "Fisherman");
+                    characterImage.sprite = regularExpression;
                     break;
                 case 1:
                     PrintDialog("Well this is weird, what’s this? Some kind of paper in the bottle? Why would someone throw something like this to the ocean?", "Fisherman");
+                    characterImage.sprite = wonderingExpression;
                     break;
                 case 2:
                     ShowMessage(true);
@@ -88,32 +92,35 @@ public class DialogueManager : MonoBehaviour
                     break;
                 case 4:
                     PrintDialog("What a weird map, but it talks about huge treasure. I think it’s time to try fish it up and maybe we hit something big.", "Fisherman");
+                    characterImage.sprite = regularExpression;
                     break;
                 default:
                     StopDialogue();
                     break;
             }
         }
-        if (type == Dialog.CHEST)
+        else if (type == Dialog.CHEST)
         {
             dialogBox.SetActive(true);
             switch (dialogIncrement)
             {
                 case 0:
                     PrintDialog("This must be the chest message was talking about. It’s so heavy, there must be something inside.", "Fisherman");
+                    characterImage.sprite = wonderingExpression;
                     break;
                 default:
                     StopDialogue();
                     break;
             }
         }
-        if (type == Dialog.KEY)
+        else if (type == Dialog.KEY)
         {
             dialogBox.SetActive(true);
             switch (dialogIncrement)
             {
                 case 0:
                     PrintDialog("Good thing this is not as small as a regular key, otherwise a fish might’ve eaten it. I think this goes to the chest.", "Fisherman");
+                    characterImage.sprite = wonderingExpression;
                     break;
                 default:
                     StopDialogue();

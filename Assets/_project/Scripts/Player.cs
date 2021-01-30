@@ -13,6 +13,12 @@ public class Player : MonoBehaviour
     [SerializeField] private Image powerBar;
     
     [SerializeField] float chargeSpeed = 70;
+
+    [SerializeField] private GameObject ropeOrigin;
+    [SerializeField] private GameObject ropeDest;
+
+    public bool baitLineActive = false;
+    
     private float chargeLimit = 100;
     private float chargeAmount = 0;
 
@@ -37,6 +43,9 @@ public class Player : MonoBehaviour
             if (throwSuccesful)
                 fishCatching.CommenceCatching();
         }
+
+        if (baitLineActive)
+            SetBaitLine();
     }
 
     private void ChargeRod()
@@ -55,16 +64,19 @@ public class Player : MonoBehaviour
         bait.gameObject.SetActive(true);
         if (tempCharge > 60 && tempCharge < 75)
         {
-            bait.transform.position = pointerPos + Vector3.up/2;
+            bait.transform.position = pointerPos + Vector3.up/4;
+            baitLineActive = true;
             Debug.Log("Good throw!");
         }
         else if (tempCharge > 40 && tempCharge < 80)
         {
-            bait.transform.position = new Vector3(Random.Range(pointerPos.x-4, pointerPos.x+4), pointerPos.y + 0.5f, Random.Range(pointerPos.z-4, pointerPos.z+4));
+            baitLineActive = true;
+            bait.transform.position = new Vector3(Random.Range(pointerPos.x-4, pointerPos.x+4), pointerPos.y + 1/4, Random.Range(pointerPos.z-4, pointerPos.z+4));
             Debug.Log("Bad throw!");
         }
         else
         {
+            bait.gameObject.SetActive(false);
             Debug.Log("That didn't go anywhere");
             return;
         }
@@ -76,6 +88,12 @@ public class Player : MonoBehaviour
         throwSuccesful = true;
     }
 
+    private void SetBaitLine()
+    {
+        LineRenderer lr = bait.GetComponent<LineRenderer>();
+        lr.SetPosition(0, ropeOrigin.transform.position);
+        lr.SetPosition(1, ropeDest.transform.position);
+    }
     private void SetPointerPos()
     {
         int layerMask1 = 1 << 8;
