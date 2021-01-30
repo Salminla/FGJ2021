@@ -2,6 +2,8 @@
 
 public class MouseLook : MonoBehaviour
 {
+    [SerializeField] private GameManager gameManager;
+
     [SerializeField] private Camera mainCamera;
     [Range(20, 300)] 
     [SerializeField] private float mouseSensitivity = 150;
@@ -40,6 +42,7 @@ public class MouseLook : MonoBehaviour
         rotY += mouseY * mouseSensitivity * Time.deltaTime;
 
         rotX = Mathf.Clamp(rotX, -80, 45);
+        rotY = Mathf.Clamp(rotY, gameManager.CamClampAngleYMin, gameManager.CamClampAngleYMax);
         
         Quaternion localRotationY = Quaternion.Euler(0, rotY, 0);
         Quaternion localRotationX = Quaternion.Euler(rotX, 0, 0);
