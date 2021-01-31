@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,14 +14,20 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Image chest;
     [SerializeField] private Text junk;
     [SerializeField] private TMP_Text boatSank;
-    
+
+    private void Start()
+    {
+        UpdateFishAmount();
+        UpdateBoatWeight(0);
+    }
+
     public void UpdateFishAmount()
     {
-        fishAmount.text = "X" + gameManager.FishAmount;
+        fishAmount.text = gameManager.FishAmount.ToString();
     }
     public void UpdateBoatWeight(int weight)
     {
-        boatWeight.text = "Weight " + weight;
+        boatWeight.text = weight.ToString();
     }
     public void EnableBottle(bool state)
     {

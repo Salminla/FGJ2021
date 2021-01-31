@@ -13,11 +13,20 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private float textRunSpeed = 0.1f;
     [SerializeField] private GameObject bottleMessage;
     [SerializeField] private Image characterImage;
+    [SerializeField] private AudioClip sealSound;
+    
     
     [Header("Fisher sprites")]
     [SerializeField] private Sprite regularExpression;
     [SerializeField] private Sprite wonderingExpression;
     [SerializeField] private Sprite surprisedExpression;
+    
+    [Header("Models")] 
+    [SerializeField] private GameObject modelPos;
+    [SerializeField] private TMP_Text modelTitle;
+    [SerializeField] private GameObject fish;
+    [SerializeField] private GameObject key;
+    [SerializeField] private GameObject chest;
 
     private int dialogIncrement;
     private bool dialogFinished = false;
@@ -69,7 +78,15 @@ public class DialogueManager : MonoBehaviour
         }
         else if (type == Dialog.FISH)
         {
-            dialogBox.SetActive(true);
+            switch (dialogIncrement)
+            {
+                case 0:
+                    DisplayModel("You caught a fish!", "fish", true);
+                    break;
+                default:
+                    StopDialogue();
+                    break;
+            }
         }
         else if (type == Dialog.BOTTLE)
         {
@@ -81,16 +98,23 @@ public class DialogueManager : MonoBehaviour
                     characterImage.sprite = regularExpression;
                     break;
                 case 1:
+                    dialogBox.SetActive(false);
+                    DisplayModel("You caught a bottle!", "", true);
+                    characterImage.sprite = regularExpression;
+                    break;
+                case 2:
+                    dialogBox.SetActive(true);
+                    DisplayModel("", "", false);
                     PrintDialog("Well this is weird, what’s this? Some kind of paper in the bottle? Why would someone throw something like this to the ocean?", "Fisherman");
                     characterImage.sprite = wonderingExpression;
                     break;
-                case 2:
+                case 3:
                     ShowMessage(true);
                     break;
-                case 3:
+                case 4:
                     ShowMessage(false);
                     break;
-                case 4:
+                case 5:
                     PrintDialog("What a weird map, but it talks about huge treasure. I think it’s time to try fish it up and maybe we hit something big.", "Fisherman");
                     characterImage.sprite = regularExpression;
                     break;
@@ -105,6 +129,13 @@ public class DialogueManager : MonoBehaviour
             switch (dialogIncrement)
             {
                 case 0:
+                    dialogBox.SetActive(false);
+                    DisplayModel("You caught a chest!", "chest", true);
+                    characterImage.sprite = wonderingExpression;
+                    break;
+                case 1:
+                    dialogBox.SetActive(true);
+                    DisplayModel("", "", false);
                     PrintDialog("This must be the chest message was talking about. It’s so heavy, there must be something inside.", "Fisherman");
                     characterImage.sprite = wonderingExpression;
                     break;
@@ -119,8 +150,45 @@ public class DialogueManager : MonoBehaviour
             switch (dialogIncrement)
             {
                 case 0:
+                    dialogBox.SetActive(false);
+                    DisplayModel("You caught a key!", "key", true);
+                    characterImage.sprite = wonderingExpression;
+                    break;
+                case 1:
+                    dialogBox.SetActive(true);
+                    DisplayModel("","", false);
                     PrintDialog("Good thing this is not as small as a regular key, otherwise a fish might’ve eaten it. I think this goes to the chest.", "Fisherman");
                     characterImage.sprite = wonderingExpression;
+                    break;
+                case 2:
+                    PrintDialog("I got the chest and the key, time to put them together. .", "Fisherman");
+                    characterImage.sprite = regularExpression;
+                    break;
+                case 3:
+                    PrintDialog("It’s… it’s a golden seal… it looks like you buddy. There’s text at the bottom of the statue.", "Fisherman");
+                    characterImage.sprite = wonderingExpression;
+                    break;
+                case 4:
+                    PrintDialog("This is the Longest John, the greatest extra member of the Wellerman’s crew and eater of small fishes. May his grandchildren rule over this small island someday. ", "Golden seal");
+                    characterImage.sprite = wonderingExpression;
+                    break;
+                case 5:
+                    PrintDialog("Old relative of yours?", "Fisherman");
+                    characterImage.sprite = wonderingExpression;
+                    break;
+                case 6:
+                    PrintDialog("Ow ow ow!!", "Seal");
+                    SoundManager.Instance.Play(sealSound);
+                    characterImage.sprite = null;
+                    break;
+                case 7:
+                    PrintDialog("Thought so, I can see the resemblance. I think we found ourselves a new friend to the bookshelf. Well this was a long day, what say you if we head back home and have a nice dinner? ", "Fisherman");
+                    characterImage.sprite = regularExpression;
+                    break;
+                case 8:
+                    PrintDialog("Ow ow!!", "Seal");
+                    SoundManager.Instance.Play(sealSound);
+                    characterImage.sprite = null;
                     break;
                 default:
                     StopDialogue();
@@ -137,6 +205,40 @@ public class DialogueManager : MonoBehaviour
     {
         
     }
+
+    private void DisplayModel(string title, string type, bool state)
+    {
+        if (state)
+        {
+            modelTitle.text = title;
+            modelPos.gameObject.SetActive(true);
+            modelTitle.gameObject.SetActive(true);
+            if (type == "fish")
+            {
+                GameObject newModel = Instantiate(fish, modelPos.transform, false);
+                newModel.transform.position = modelPos.transform.position;
+                newModel.AddComponent<ObjectSpin>();
+                modelTitle.text += " Weight: " + gameManager.LastWeight+"kg";
+            }
+            if (type == "chest")
+            {
+                GameObject newModel = Instantiate(chest, modelPos.transform, false);
+                newModel.transform.position = modelPos.transform.position;
+                newModel.AddComponent<ObjectSpin>().axis = Vector3.up;
+            }
+            if (type == "key")
+            {
+                GameObject newModel = Instantiate(key, modelPos.transform, false);
+                newModel.transform.position = modelPos.transform.position;
+                newModel.AddComponent<ObjectSpin>().axis = Vector3.up;;
+            }
+        }
+        else
+        {
+            modelTitle.gameObject.SetActive(false);
+            modelPos.gameObject.SetActive(false);
+        }
+    }
     public void StopDialogue()
     {
         dialogBox.SetActive(false);
@@ -144,6 +246,10 @@ public class DialogueManager : MonoBehaviour
         gameManager.enableFishing = true;
         gameManager.mouseLookEnabled = true;
         dialogIncrement = 0;
+        modelPos.gameObject.SetActive(false);
+        modelTitle.gameObject.SetActive(false);
+        foreach (Transform child in modelPos.transform)
+            Destroy(child.gameObject);
     }
 
     IEnumerator TextPrint(string message)

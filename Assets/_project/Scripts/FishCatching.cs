@@ -58,7 +58,9 @@ public class FishCatching : MonoBehaviour
         int fishWeight = Random.Range(3, 20);
         boat.ChangeWeight(fishWeight);
         gameManager.FishAmount++;
+        gameManager.LastWeight = fishWeight;
         UIManager.UpdateFishAmount();
+        dialogueManager.StartDialogue(Dialog.FISH);
     }
 
     private void CaughtBottle()
