@@ -10,7 +10,7 @@ public class Boat : MonoBehaviour
     private float yOrig;
 
     private int boatWeight;
-    private int maxWeight = 100;
+    private int maxWeight = 200;
 
     private void Start()
     {
@@ -34,8 +34,10 @@ public class Boat : MonoBehaviour
 
     public void SinkBoat()
     {
+        gameManager.BoatSank = true;
         floatMovement = false;
         gameManager.enableFishing = false;
+        gameManager.mouseLookEnabled = false;
         uiManager.EnableBoatSank(true);
     }
 }

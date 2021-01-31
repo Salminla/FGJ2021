@@ -7,6 +7,7 @@ public class DialogueManager : MonoBehaviour
 {
     [SerializeField] private GameManager gameManager;
     [SerializeField] private UIManager uiManager;
+    [SerializeField] private FishCatching fishCatching;
     
     [SerializeField] private GameObject dialogBox;
     [SerializeField] private TMP_Text textField;
@@ -15,6 +16,9 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private GameObject bottleMessage;
     [SerializeField] private Image characterImage;
     [SerializeField] private AudioClip sealSound;
+    [SerializeField] private AudioClip hornSound;
+    [SerializeField] private AudioClip engineSound;
+    [SerializeField] private GameObject endScreen;
     
     [Header("Fisher sprites")]
     [SerializeField] private Sprite regularExpression;
@@ -29,11 +33,18 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private GameObject key;
     [SerializeField] private GameObject chest;
     [SerializeField] private GameObject bottle;
+    
+    [Header("Credits stuff")]
+    public Animator transition;
+    public float transitionTime = 1f;
+    private static readonly int StartAnim = Animator.StringToHash("Start");
 
     private int dialogIncrement;
     private bool dialogFinished = false;
     private bool dialogStopped = false;
     private Dialog currentType;
+
+    private bool gameEnded = false;
 
     private void Start()
     {
@@ -140,7 +151,7 @@ public class DialogueManager : MonoBehaviour
                 case 1:
                     dialogBox.SetActive(true);
                     DisplayModel("", "", false);
-                    PrintDialog("This must be the chest message was talking about. It’s so heavy, there must be something inside.", "Fisherman");
+                    PrintDialog("This must be the chest the message was talking about. It’s so heavy, there must be something inside.", "Fisherman");
                     characterImage.sprite = wonderingExpression;
                     break;
                 default:
@@ -171,6 +182,7 @@ public class DialogueManager : MonoBehaviour
                 case 3:
                     PrintDialog("It’s… it’s a golden seal… it looks like you buddy. There’s text at the bottom of the statue.", "Fisherman");
                     characterImage.sprite = wonderingExpression;
+                    fishCatching.AddModelDeck("goldenseal");
                     break;
                 case 4:
                     PrintDialog("This is the Longest John, the greatest extra member of the Wellerman’s crew and eater of small fishes. May his grandchildren rule over this small island someday. ", "Golden seal");
@@ -193,6 +205,12 @@ public class DialogueManager : MonoBehaviour
                     PrintDialog("Ow ow!!", "Seal");
                     SoundManager.Instance.Play(sealSound);
                     characterImage.sprite = seal;
+                    break;
+                case 9:
+                    gameManager.EndGame();
+                    SoundManager.Instance.Play(hornSound);
+                    StartCoroutine(PlayDelayedSound(engineSound, 6));
+                    ShowEndScreen();
                     break;
                 default:
                     StopDialogue();
@@ -246,17 +264,30 @@ public class DialogueManager : MonoBehaviour
     }
     public void StopDialogue()
     {
-        dialogBox.SetActive(false);
-        dialogStopped = true;
-        gameManager.enableFishing = true;
-        gameManager.mouseLookEnabled = true;
-        dialogIncrement = 0;
-        modelPos.gameObject.SetActive(false);
-        modelTitle.gameObject.SetActive(false);
-        foreach (Transform child in modelPos.transform)
-            Destroy(child.gameObject);
+        if (!gameManager.GameEnd)
+        {
+            dialogBox.SetActive(false);
+            dialogStopped = true;
+            gameManager.enableFishing = true;
+            gameManager.mouseLookEnabled = true;
+            dialogIncrement = 0;
+            modelPos.gameObject.SetActive(false);
+            modelTitle.gameObject.SetActive(false);
+            foreach (Transform child in modelPos.transform)
+                Destroy(child.gameObject);
+        }
     }
-
+    private void ShowEndScreen()
+    {
+        StartCoroutine(EndTransition());
+        endScreen.gameObject.SetActive(true);
+        transition.SetTrigger(StartAnim);
+    }
+    IEnumerator EndTransition()
+    {
+        yield return new WaitForSeconds(transitionTime);
+        uiManager.RollCredits();
+    }
     IEnumerator TextPrint(string message)
     {
         for (int i = 0; i < message.Length + 1; i++)
@@ -265,5 +296,11 @@ public class DialogueManager : MonoBehaviour
             yield return new WaitForSeconds(textRunSpeed);
         }
         dialogFinished = true;
+    }
+
+    IEnumerator PlayDelayedSound(AudioClip sound, int seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        SoundManager.Instance.Play(sound);
     }
 }

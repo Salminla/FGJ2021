@@ -16,6 +16,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Material pointerMatGood;
     [SerializeField] public GameObject bait;
     [SerializeField] private Image powerBar;
+    [SerializeField] private AudioClip rodCast;
     
     [SerializeField] float chargeSpeed = 70 ;
 
@@ -69,6 +70,7 @@ public class Player : MonoBehaviour
         bait.gameObject.SetActive(true);
         if (tempCharge > 60 && tempCharge < 75)
         {
+            SoundManager.Instance.Play(rodCast);
             bait.transform.position = pointerPos + Vector3.up/4;
             baitLineActive = true;
             uiManager.SetPowerText("Good!",Color.green, true);
@@ -77,6 +79,7 @@ public class Player : MonoBehaviour
         }
         else if (tempCharge > 40 && tempCharge < 80)
         {
+            SoundManager.Instance.Play(rodCast);
             baitLineActive = true;
             bait.transform.position = new Vector3(Random.Range(pointerPos.x-4, pointerPos.x+4), pointerPos.y + 1/4, Random.Range(pointerPos.z-4, pointerPos.z+4));
             uiManager.SetPowerText("Bad!", Color.yellow, true);

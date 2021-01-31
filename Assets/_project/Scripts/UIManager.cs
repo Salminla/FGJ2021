@@ -17,6 +17,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text boatSank;
     [SerializeField] private Image alert;
     [SerializeField] private TMP_Text powerState;
+    [SerializeField] private TMP_Text creditsText;
 
     private void Start()
     {
@@ -63,5 +64,10 @@ public class UIManager : MonoBehaviour
         powerState.gameObject.SetActive(state);
         powerState.text = text;
         powerState.color = color;
+    }
+
+    public void RollCredits()
+    {
+        
     }
 }

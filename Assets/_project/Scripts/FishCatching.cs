@@ -10,6 +10,9 @@ public class FishCatching : MonoBehaviour
     [SerializeField] private UIManager uiManager;
     [SerializeField] private DialogueManager dialogueManager;
     [SerializeField] private Boat boat;
+    [SerializeField] private AudioClip rodReel;
+    [SerializeField] private AudioClip gotBit;
+    [SerializeField] private AudioClip gotFish;
     
     [SerializeField] private int chestChance = 20;
     [SerializeField] private int keyChance = 20;
@@ -19,6 +22,7 @@ public class FishCatching : MonoBehaviour
     [SerializeField] private GameObject fish;
     [SerializeField] private GameObject key;
     [SerializeField] private GameObject chest;
+    [SerializeField] private GameObject goldenSeal;
     
     private Player player;
 
@@ -40,6 +44,7 @@ public class FishCatching : MonoBehaviour
         {
             timedClick = true;
             uiManager.EnableAlert(false);
+            SoundManager.Instance.Play(rodReel);
         }
     }
 
@@ -56,14 +61,16 @@ public class FishCatching : MonoBehaviour
         
         if (!fishBit) return;
         
-        if (!delayStarted)
+        if (!delayStarted && !fishCatch)
         {
             Debug.Log("You got bit!");
             uiManager.EnableAlert(true);
+            SoundManager.Instance.Play(gotBit);
             StartCoroutine(FishBit());
         }
 
         if (!fishCatch) return;
+        SoundManager.Instance.Play(gotFish);
         int randomNum = Random.Range(0, 100);
         if (gameManager.FishAmount > numFishBeforeSpecial)
         {
@@ -135,7 +142,7 @@ public class FishCatching : MonoBehaviour
         uiManager.EnableAlert(false);
     }
 
-    private void AddModelDeck(string model)
+    public void AddModelDeck(string model)
     {
         if (model == "fish")
         {
@@ -148,6 +155,10 @@ public class FishCatching : MonoBehaviour
         else if (model == "key")
         {
             key.gameObject.SetActive(true);
+        }
+        else if (model == "goldenseal")
+        {
+            goldenSeal.gameObject.SetActive(true);
         }
         else
             Debug.Log("No model given!");
