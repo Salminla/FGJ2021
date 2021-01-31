@@ -9,11 +9,14 @@ public class UIManager : MonoBehaviour
     
     [SerializeField] private Text fishAmount;
     [SerializeField] private Text boatWeight;
-    [SerializeField] private Image bottle;
+    [SerializeField] private Image bottleFull;
+    [SerializeField] private Image bottleEmpty;
     [SerializeField] private Image key;
     [SerializeField] private Image chest;
     [SerializeField] private Text junk;
     [SerializeField] private TMP_Text boatSank;
+    [SerializeField] private Image alert;
+    [SerializeField] private TMP_Text powerState;
 
     private void Start()
     {
@@ -29,9 +32,13 @@ public class UIManager : MonoBehaviour
     {
         boatWeight.text = weight.ToString();
     }
-    public void EnableBottle(bool state)
+    public void EnableBottleFull(bool state)
     {
-        bottle.gameObject.SetActive(state);
+        bottleFull.gameObject.SetActive(state);
+    }
+    public void EnableBottleEmpty(bool state)
+    {
+        bottleEmpty.gameObject.SetActive(state);
     }
     public void EnableKey(bool state)
     {
@@ -45,5 +52,16 @@ public class UIManager : MonoBehaviour
     public void EnableBoatSank(bool state)
     {
         boatSank.gameObject.SetActive(state); 
+    }
+    public void EnableAlert(bool state)
+    {
+        alert.gameObject.SetActive(state); 
+    }
+
+    public void SetPowerText(string text, Color color, bool state)
+    {
+        powerState.gameObject.SetActive(state);
+        powerState.text = text;
+        powerState.color = color;
     }
 }

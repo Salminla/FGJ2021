@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class DialogueManager : MonoBehaviour
 {
     [SerializeField] private GameManager gameManager;
+    [SerializeField] private UIManager uiManager;
     
     [SerializeField] private GameObject dialogBox;
     [SerializeField] private TMP_Text textField;
@@ -15,11 +16,11 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private Image characterImage;
     [SerializeField] private AudioClip sealSound;
     
-    
     [Header("Fisher sprites")]
     [SerializeField] private Sprite regularExpression;
     [SerializeField] private Sprite wonderingExpression;
     [SerializeField] private Sprite surprisedExpression;
+    [SerializeField] private Sprite seal;
     
     [Header("Models")] 
     [SerializeField] private GameObject modelPos;
@@ -27,6 +28,7 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private GameObject fish;
     [SerializeField] private GameObject key;
     [SerializeField] private GameObject chest;
+    [SerializeField] private GameObject bottle;
 
     private int dialogIncrement;
     private bool dialogFinished = false;
@@ -99,7 +101,7 @@ public class DialogueManager : MonoBehaviour
                     break;
                 case 1:
                     dialogBox.SetActive(false);
-                    DisplayModel("You caught a bottle!", "", true);
+                    DisplayModel("You caught a bottle!", "bottle", true);
                     characterImage.sprite = regularExpression;
                     break;
                 case 2:
@@ -110,6 +112,8 @@ public class DialogueManager : MonoBehaviour
                     break;
                 case 3:
                     ShowMessage(true);
+                    uiManager.EnableBottleFull(false);
+                    uiManager.EnableBottleEmpty(true);
                     break;
                 case 4:
                     ShowMessage(false);
@@ -179,7 +183,7 @@ public class DialogueManager : MonoBehaviour
                 case 6:
                     PrintDialog("Ow ow ow!!", "Seal");
                     SoundManager.Instance.Play(sealSound);
-                    characterImage.sprite = null;
+                    characterImage.sprite = seal;
                     break;
                 case 7:
                     PrintDialog("Thought so, I can see the resemblance. I think we found ourselves a new friend to the bookshelf. Well this was a long day, what say you if we head back home and have a nice dinner? ", "Fisherman");
@@ -188,7 +192,7 @@ public class DialogueManager : MonoBehaviour
                 case 8:
                     PrintDialog("Ow ow!!", "Seal");
                     SoundManager.Instance.Play(sealSound);
-                    characterImage.sprite = null;
+                    characterImage.sprite = seal;
                     break;
                 default:
                     StopDialogue();
@@ -201,11 +205,6 @@ public class DialogueManager : MonoBehaviour
     {
         bottleMessage.gameObject.SetActive(state);
     }
-    private void ContinueGame()
-    {
-        
-    }
-
     private void DisplayModel(string title, string type, bool state)
     {
         if (state)
@@ -229,6 +228,12 @@ public class DialogueManager : MonoBehaviour
             if (type == "key")
             {
                 GameObject newModel = Instantiate(key, modelPos.transform, false);
+                newModel.transform.position = modelPos.transform.position;
+                newModel.AddComponent<ObjectSpin>().axis = Vector3.up;;
+            }
+            if (type == "bottle")
+            {
+                GameObject newModel = Instantiate(bottle, modelPos.transform, false);
                 newModel.transform.position = modelPos.transform.position;
                 newModel.AddComponent<ObjectSpin>().axis = Vector3.up;;
             }

@@ -1,18 +1,23 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     [SerializeField] private GameManager gameManager;
+    [SerializeField] private UIManager uiManager;
+    
     [SerializeField] private FishCatching fishCatching;
     
     [SerializeField] private Camera mainCamera;
     [SerializeField] private GameObject fishRod;
     [SerializeField] private GameObject pointerObject;
+    [SerializeField] private Material pointerMatBad;
+    [SerializeField] private Material pointerMatGood;
     [SerializeField] public GameObject bait;
     [SerializeField] private Image powerBar;
     
-    [SerializeField] float chargeSpeed = 70;
+    [SerializeField] float chargeSpeed = 70 ;
 
     [SerializeField] private GameObject ropeOrigin;
     [SerializeField] private GameObject ropeDest;
@@ -66,17 +71,23 @@ public class Player : MonoBehaviour
         {
             bait.transform.position = pointerPos + Vector3.up/4;
             baitLineActive = true;
+            uiManager.SetPowerText("Good!",Color.green, true);
+            StartCoroutine(disablePowerText());
             Debug.Log("Good throw!");
         }
         else if (tempCharge > 40 && tempCharge < 80)
         {
             baitLineActive = true;
             bait.transform.position = new Vector3(Random.Range(pointerPos.x-4, pointerPos.x+4), pointerPos.y + 1/4, Random.Range(pointerPos.z-4, pointerPos.z+4));
+            uiManager.SetPowerText("Bad!", Color.yellow, true);
+            StartCoroutine(disablePowerText());
             Debug.Log("Bad throw!");
         }
         else
         {
             bait.gameObject.SetActive(false);
+            uiManager.SetPowerText("Fail!",Color.red, true);
+            StartCoroutine(disablePowerText());
             Debug.Log("That didn't go anywhere");
             return;
         }
@@ -117,5 +128,15 @@ public class Player : MonoBehaviour
             if (pointerObject.activeSelf) 
                 pointerObject.SetActive(false);
         }
+        if (Physics.CheckSphere(transform.position, 8, 1<<9))
+            pointerObject.GetComponent<MeshRenderer>().material = pointerMatBad;
+        else
+            pointerObject.GetComponent<MeshRenderer>().material = pointerMatGood;
+    }
+
+    IEnumerator disablePowerText()
+    {
+        yield return new WaitForSeconds(2);
+        uiManager.SetPowerText("", Color.black, false);
     }
 }

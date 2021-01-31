@@ -30,7 +30,7 @@ public class MouseLook : MonoBehaviour
         Vector3 rot = transform.localRotation.eulerAngles;
         rotX = rot.x;
         rotY = rot.y;
-
+        rotY = 96; // This is pretty bad...
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
